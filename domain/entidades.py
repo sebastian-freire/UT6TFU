@@ -8,7 +8,7 @@ class Estado(str, Enum):
     ListoParaEntregar = "Listo para entregar"
 
 class Producto:
-    def __init__(self, idProducto: int, stock: int, descripcion: str, precio: float, categoria: str = "Comida"):
+    def __init__(self, idProducto: int, stock: int, descripcion: str, precio: float, categoria: str = "comida"):
         self.idProducto: int = idProducto
         self.stock: int = stock
         self.descripcion: str = descripcion

@@ -36,10 +36,10 @@ class CambiarEstadoInput(BaseModel):
 
 # ==================== ENDPOINTS PRODUCTOS ====================
 @app.get("/productos")
-def listar_productos(categoria: Optional[str] = Query(None, description="Filtrar por categoría: Comida, Bebidas, Postres")):
+def listar_productos(categoria: Optional[str] = Query(None, description="Filtrar por categoría: comida, bebida, postre")):
     """
     Obtiene el listado de productos del catálogo.
-    Opcional: filtrar por categoría (Comida, Bebidas, Postres).
+    Opcional: filtrar por categoría (comida, bebida, postre).
     """
     catalogo = producto_service.mostarCatalogo()
     

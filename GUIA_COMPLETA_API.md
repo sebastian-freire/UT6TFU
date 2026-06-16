@@ -127,9 +127,9 @@ GET /productos
 **Con filtro por categoría:**
 
 ```bash
-GET /productos?categoria=Comida
-GET /productos?categoria=Bebidas
-GET /productos?categoria=Postres
+GET /productos?categoria=comida
+GET /productos?categoria=bebida
+GET /productos?categoria=postre
 ```
 
 **Respuesta:**
@@ -619,13 +619,13 @@ curl -X POST http://localhost:8000/pedidos/1/pagar-diferencia \
 
 ```bash
 # Solo comidas
-curl "http://localhost:8000/productos?categoria=Comida"
+curl "http://localhost:8000/productos?categoria=comida"
 
 # Solo bebidas
-curl "http://localhost:8000/productos?categoria=Bebidas"
+curl "http://localhost:8000/productos?categoria=bebida"
 
 # Solo postres
-curl "http://localhost:8000/productos?categoria=Postres"
+curl "http://localhost:8000/productos?categoria=postre"
 ```
 
 ---

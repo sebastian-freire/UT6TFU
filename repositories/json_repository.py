@@ -13,16 +13,16 @@ class ProductoRepository(ProductoRepositoryBase):
         """Pre-carga el catálogo real que diseñaron en el prototipo de la UT4 con categorías"""
         if not os.path.exists(self.filepath):
             productos_iniciales = [
-                {"idProducto": 1, "stock": 50, "descripcion": "Papas Cheddar", "precio": 270.0, "categoria": "Comida"},
-                {"idProducto": 2, "stock": 100, "descripcion": "Coca Cola Zero", "precio": 240.0, "categoria": "Bebidas"},
-                {"idProducto": 3, "stock": 30, "descripcion": "Power Burger", "precio": 380.0, "categoria": "Comida"},
-                {"idProducto": 4, "stock": 30, "descripcion": "Veggie Burger", "precio": 350.0, "categoria": "Comida"},
-                {"idProducto": 5, "stock": 25, "descripcion": "The Pickle", "precio": 380.0, "categoria": "Comida"},
-                {"idProducto": 6, "stock": 25, "descripcion": "Onion Burger", "precio": 390.0, "categoria": "Comida"},
-                {"idProducto": 7, "stock": 25, "descripcion": "Crunch Burger", "precio": 390.0, "categoria": "Comida"},
-                {"idProducto": 8, "stock": 25, "descripcion": "Moonwalk Burger", "precio": 390.0, "categoria": "Comida"},
-                {"idProducto": 9, "stock": 40, "descripcion": "Flan", "precio": 150.0, "categoria": "Postres"},
-                {"idProducto": 10, "stock": 35, "descripcion": "Tiramisú", "precio": 180.0, "categoria": "Postres"}
+                {"idProducto": 1, "stock": 50, "descripcion": "Papas Cheddar", "precio": 270.0, "categoria": "comida"},
+                {"idProducto": 2, "stock": 100, "descripcion": "Coca Cola Zero", "precio": 240.0, "categoria": "bebida"},
+                {"idProducto": 3, "stock": 30, "descripcion": "Power Burger", "precio": 380.0, "categoria": "comida"},
+                {"idProducto": 4, "stock": 30, "descripcion": "Veggie Burger", "precio": 350.0, "categoria": "comida"},
+                {"idProducto": 5, "stock": 25, "descripcion": "The Pickle", "precio": 380.0, "categoria": "comida"},
+                {"idProducto": 6, "stock": 25, "descripcion": "Onion Burger", "precio": 390.0, "categoria": "comida"},
+                {"idProducto": 7, "stock": 25, "descripcion": "Crunch Burger", "precio": 390.0, "categoria": "comida"},
+                {"idProducto": 8, "stock": 25, "descripcion": "Moonwalk Burger", "precio": 390.0, "categoria": "comida"},
+                {"idProducto": 9, "stock": 40, "descripcion": "Flan", "precio": 150.0, "categoria": "postre"},
+                {"idProducto": 10, "stock": 35, "descripcion": "Tiramisú", "precio": 180.0, "categoria": "postre"}
             ]
             self._guardar_todos(productos_iniciales)
 
@@ -37,7 +37,7 @@ class ProductoRepository(ProductoRepositoryBase):
     def buscarPorId(self, idProducto: int) -> Producto:
         for p in self._leer_todos():
             if p["idProducto"] == idProducto:
-                return Producto(p["idProducto"], p["stock"], p["descripcion"], p["precio"], p.get("categoria", "Comida"))
+                return Producto(p["idProducto"], p["stock"], p["descripcion"], p["precio"], p.get("categoria", "comida"))
         return None
 
     def agregarProducto(self, producto: Producto) -> None:
@@ -63,7 +63,7 @@ class ProductoRepository(ProductoRepositoryBase):
         self._guardar_todos(data)
 
     def obtenerTodosProductos(self) -> List[Producto]:
-        return [Producto(p["idProducto"], p["stock"], p["descripcion"], p["precio"], p.get("categoria", "Comida")) for p in self._leer_todos()]
+        return [Producto(p["idProducto"], p["stock"], p["descripcion"], p["precio"], p.get("categoria", "comida")) for p in self._leer_todos()]
 
 
 class PedidoRepository(PedidoRepositoryBase):

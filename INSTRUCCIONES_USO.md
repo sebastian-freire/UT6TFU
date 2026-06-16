@@ -73,7 +73,7 @@ curl http://localhost:8000/productos
     "stock": 50,
     "descripcion": "Papas Cheddar",
     "precio": 270.0,
-    "categoria": "Comida"
+    "categoria": "comida"
   },
   ...
 ]
@@ -83,13 +83,13 @@ curl http://localhost:8000/productos
 
 ```bash
 # Ver solo comidas
-curl "http://localhost:8000/productos?categoria=Comida"
+curl "http://localhost:8000/productos?categoria=comida"
 
 # Ver solo bebidas
-curl "http://localhost:8000/productos?categoria=Bebidas"
+curl "http://localhost:8000/productos?categoria=bebida"
 
 # Ver solo postres
-curl "http://localhost:8000/productos?categoria=Postres"
+curl "http://localhost:8000/productos?categoria=postre"
 ```
 
 #### Paso 1c: Crear un pedido

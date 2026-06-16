@@ -29,7 +29,7 @@ c:\Users\sebaf\Desktop\ADA ENTREGAS\UT6TFU\
 │
 ├─ 📂 services/                          ← Lógica de aplicación
 │  ├─ __init__.py
-│  ├─ ✅ pedido_service.py              (Integrado: descuento stock)
+│  ├─ ✅ service.py                     (Lógica de servicios: pedidos, productos, pagos)
 │  └─ sistema_pagos.py                   (Simula POSNET)
 │
 └─ 📂 DATA (Auto-generados)
@@ -45,7 +45,7 @@ c:\Users\sebaf\Desktop\ADA ENTREGAS\UT6TFU\
    ├─ [+] Agregado campo "categoria" a Producto
    ├─ [+] Endpoint GET /productos?categoria=X
    ├─ [+] Descuento automático de stock
-   └─ [+] Categorías: Comida, Bebidas, Postres
+   └─ [+] Categorías: comida, bebida, postre
 
 ✅ 2. PUC 1: REGISTRO DE PEDIDO (El corazón del negocio)
    ├─ [✓] POST /pedidos → Autogenera ID, descuenta stock, calcula total
@@ -239,7 +239,7 @@ curl -X PATCH http://localhost:8000/pedidos/1/estado \
    - main.py
    - entidades.py
    - json_repository.py
-   - pedido_service.py
+   - service.py
 
 ✅ Estructura del proyecto: CORRECTA
    - Separación de capas

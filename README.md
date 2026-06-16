@@ -56,7 +56,7 @@ API REST completa que implementa los 2 **Procesos de Uso Críticos (PUCs)** del 
 │
 ├── services/
 │   ├── __init__.py
-│   ├── pedido_service.py       # Lógica de pedidos (con descuento automático)
+│   ├── service.py              # Lógica de servicios (pedidos, productos, pagos)
 │   └── sistema_pagos.py        # Simula POSNET
 │
 ├── productos.json              # Catálogo (auto-generado con categorías)
@@ -226,7 +226,7 @@ Contiene:
 - ✅ Agregados productos postres al catálogo inicial
 - ✅ Todos los métodos actualizados
 
-### En `services/pedido_service.py`
+### En `services/service.py`
 
 - ✅ **INTEGRADO**: Descuento automático de stock al crear pedido
 - ✅ **INTEGRADO**: Restauración de stock al editar/cancelar

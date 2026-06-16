@@ -7,7 +7,7 @@
 | Requisito                     | Estado | Validación                                                                               |
 | ----------------------------- | ------ | ---------------------------------------------------------------------------------------- |
 | Proveer lista de productos    | ✅     | `GET /productos` retorna ID, descripción, precio, stock, **categoría**                   |
-| Filtros por categoría         | ✅     | `GET /productos?categoria=Comida\|Bebidas\|Postres`                                      |
+| Filtros por categoría         | ✅     | `GET /productos?categoria=comida\|bebida\|postre`                                        |
 | Control de inventario (Stock) | ✅     | Método `cambiarStock()` invocado automáticamente                                         |
 | Descuento de stock            | ✅     | Al crear pedido: automático. Al editar: restaura + descuenta. Al cancelar: devuelve todo |
 
@@ -110,7 +110,7 @@ class Producto:
 
 # DESPUÉS:
 class Producto:
-    def __init__(self, idProducto, stock, descripcion, precio, categoria="Comida"):
+    def __init__(self, idProducto, stock, descripcion, precio, categoria="comida"):
         self.categoria = categoria  # ✅ Agregado
 ```
 
@@ -124,7 +124,7 @@ class Producto:
 - ✅ obtenerTodosProductos() retorna con categoría
 ```
 
-### ✅ `services/pedido_service.py`
+### ✅ `services/service.py`
 
 ```python
 # INTEGRADO EN realizarPedido():
