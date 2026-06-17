@@ -220,6 +220,9 @@ curl http://localhost:8000/pedidos
 
 ```bash
 # Solo confirmados (pueden editarse)
+curl "http://localhost:8000/pedidos?estado=SinAceptar"
+
+# Solo confirmados (pueden editarse)
 curl "http://localhost:8000/pedidos?estado=Confirmado"
 
 # Los que NO pueden editarse (ya en cocina)
