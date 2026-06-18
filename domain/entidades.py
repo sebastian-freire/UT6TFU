@@ -18,16 +18,13 @@ class Producto:
     def cambiarStock(self, cantidad: int) -> None:
         self.stock += cantidad
 
-
 class Pedido:
     def __init__(self, idPedido: int, cliente: str = ""):
         self.idPedido: int = idPedido
-        self.cliente: str = cliente  # Derivado de la UI (ej. 'Juani')
+        self.cliente: str = cliente 
         self.estado: Estado = Estado.SinAceptar
         self.total: float = 0.0
         self.listaProductos: List[Producto] = []
-        
-        # Diccionario interno auxiliar para mapear de forma eficiente idProducto -> cantidad
         self._cantidades = {}
 
     def cambiarEstado(self, estado: Estado) -> None:
@@ -35,6 +32,12 @@ class Pedido:
 
     def devolverEstado(self) -> Estado:
         return self.estado
+
+    def obtenerCantidadProducto(self, idProducto: int) -> int:
+        return self._cantidades.get(idProducto, 0)
+
+    def obtenerCantidades(self) -> dict:
+        return self._cantidades.copy()
 
     def agregarProducto(self, producto: Producto, cantidad: int) -> None:
         if producto.idProducto in self._cantidades:

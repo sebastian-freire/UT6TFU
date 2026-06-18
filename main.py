@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from domain import Estado
 from repositories import ProductoRepository, PedidoRepository
-from services import ProductoService, PedidoService
+from services import ProductoService, PedidoService, ImpresionService, PagoService, VisualizacionService
 
 app = FastAPI(title="T&R Hamburguesería - API Backend")
 
@@ -13,6 +13,9 @@ pedido_repo = PedidoRepository(producto_repo=producto_repo)
 
 producto_service = ProductoService(producto_repo)
 pedido_service = PedidoService(pedido_repo, producto_repo)
+impresion_service = ImpresionService(pedido_repo)
+pago_service = PagoService()
+visualizacion_service = VisualizacionService()
 
 
 # ==================== MODELOS PYDANTIC ====================
@@ -29,10 +32,6 @@ class PagoInput(BaseModel):
 
 class EditarPedidoInput(BaseModel):
     productos: List[ItemPedidoInput]
-
-class CambiarEstadoInput(BaseModel):
-    estado: Estado
-
 
 # ==================== ENDPOINTS PRODUCTOS ====================
 @app.get("/productos")
@@ -79,8 +78,8 @@ def crear_pedido(input_data: CrearPedidoInput):
                 {
                     "idProducto": p.idProducto,
                     "descripcion": p.descripcion,
-                    "cantidad": nuevo_pedido._cantidades[p.idProducto],
-                    "subtotal": p.precio * nuevo_pedido._cantidades[p.idProducto]
+                    "cantidad": nuevo_pedido.obtenerCantidadProducto(p.idProducto),
+                    "subtotal": p.precio * nuevo_pedido.obtenerCantidadProducto(p.idProducto)
                 }
                 for p in nuevo_pedido.listaProductos
             ]
@@ -108,7 +107,7 @@ def consultar_pedidos(estado: Optional[Estado] = Query(None, description="Filtra
             "estado": p.estado.value,
             "total": p.total,
             "productos": [
-                {"descripcion": prod.descripcion, "cantidad": p._cantidades[prod.idProducto]}
+                {"descripcion": prod.descripcion, "cantidad": p.obtenerCantidadProducto(prod.idProducto)}
                 for prod in p.listaProductos
             ]
         })
@@ -130,7 +129,7 @@ def obtener_pedido_por_id(id_pedido: int):
         "estado": pedido.estado.value,
         "total": pedido.total,
         "productos": [
-            {"idProducto": p.idProducto, "descripcion": p.descripcion, "cantidad": pedido._cantidades[p.idProducto]}
+            {"idProducto": p.idProducto, "descripcion": p.descripcion, "cantidad": pedido.obtenerCantidadProducto(p.idProducto)}
             for p in pedido.listaProductos
         ]
     }
@@ -149,19 +148,19 @@ def pagar_pedido(id_pedido: int, pago: PagoInput):
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
     
     # Procesar pago
-    pago_exitoso = pedido_service.sistemaPagos.procesarPago(pedido.idPedido, pedido.total)
+    pago_exitoso = pago_service.procesarPago(pedido.idPedido, pedido.total)
     
     if pago_exitoso:
         # Cambiar estado a Confirmado
         pedido_service.cambiarEstado(pedido.idPedido, Estado.Confirmado)
+        visualizacion_service.actualizarPantalla(pedido.idPedido, Estado.Confirmado)
         # Imprimir comprobantes
-        pedido_service.enviarImprimirTicketPago(pedido.idPedido)
-        pedido_service.enviarImprimirComanda(pedido.idPedido)
+        impresion_service.enviarImprimirTicketPago(pedido.idPedido)
+        impresion_service.enviarImprimirComanda(pedido.idPedido)
         
         return {
             "status": "Pago aprobado por POSNET",
-            "idPedido": pedido.idPedido,
-            "nuevo_estado": pedido.estado.value
+            "idPedido": pedido.idPedido
         }
     else:
         raise HTTPException(status_code=400, detail="Transacción declinada")
@@ -188,7 +187,7 @@ def editar_pedido(id_pedido: int, input_data: EditarPedidoInput):
     # Restaurar stock de productos removidos
     productos_copia = list(pedido.listaProductos)
     for prod in productos_copia:
-        cant_anterior = pedido._cantidades[prod.idProducto]
+        cant_anterior = pedido.obtenerCantidadProducto(prod.idProducto)
         prod.cambiarStock(cant_anterior)  # Devolver al stock
         producto_repo.ModificarProducto(prod)
         pedido.quitarProducto(prod, cant_anterior)
@@ -213,7 +212,7 @@ def editar_pedido(id_pedido: int, input_data: EditarPedidoInput):
         "nuevo_total": pedido.total,
         "diferencia_a_pagar_en_caja": diferencia,
         "productos": [
-            {"idProducto": p.idProducto, "descripcion": p.descripcion, "cantidad": pedido._cantidades[p.idProducto]}
+            {"idProducto": p.idProducto, "descripcion": p.descripcion, "cantidad": pedido.obtenerCantidadProducto(p.idProducto)}
             for p in pedido.listaProductos
         ]
     }
@@ -230,11 +229,10 @@ def pagar_diferencia_edicion(id_pedido: int, pago: PagoInput):
     if not pedido:
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
     
-    # El pago va al total actual del pedido
-    pago_exitoso = pedido_service.sistemaPagos.procesarPago(pedido.idPedido, pedido.total)
+    pago_exitoso = pago_service.procesarPago(pedido.idPedido, pedido.total)
     
     if pago_exitoso:
-        pedido_service.enviarImprimirTicketPago(pedido.idPedido)
+        impresion_service.enviarImprimirTicketPago(pedido.idPedido)
         return {
             "status": "Pago de diferencia aprobado",
             "idPedido": pedido.idPedido,
@@ -245,24 +243,27 @@ def pagar_diferencia_edicion(id_pedido: int, pago: PagoInput):
 
 
 @app.patch("/pedidos/{id_pedido}/estado")
-def actualizar_estado_cocina(id_pedido: int, input_data: CambiarEstadoInput):
+def actualizar_estado_cocina(id_pedido: int):
     """
-    **PUC 2 - Paso 2 y Monitoreo**: Cambiar el estado de un pedido.
+    **PUC 2 - Paso 2 y Monitoreo**: Avanzar el estado de cocina de un pedido.
     Transiciones válidas:
-    - SinAceptar → Confirmado
     - Confirmado → En preparación
     - En preparación → Listo para entregar
-    Actualiza automáticamente el monitor del local (SistemaVisualizacion).
+    Actualiza automáticamente el monitor del local (VisualizacionService).
     """
     pedido = pedido_service.devolverPedido(id_pedido)
     if not pedido:
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
     
-    pedido_service.cambiarEstado(id_pedido, input_data.estado)
+    try:
+        nuevo_estado = pedido_service.avanzarEstadoCocina(id_pedido)
+        visualizacion_service.actualizarPantalla(id_pedido, nuevo_estado)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     
     return {
         "idPedido": id_pedido,
-        "nuevo_estado": pedido_service.devolverPedido(id_pedido).estado.value
+        "nuevo_estado": nuevo_estado.value
     }
 
 
@@ -278,7 +279,7 @@ def eliminar_pedido(id_pedido: int):
     
     # Restaurar stock de todos los productos
     for prod in pedido.listaProductos:
-        cant = pedido._cantidades[prod.idProducto]
+        cant = pedido.obtenerCantidadProducto(prod.idProducto)
         prod.cambiarStock(cant)
         producto_repo.ModificarProducto(prod)
     

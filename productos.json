@@ -1,7 +1,7 @@
 [
     {
         "idProducto": 1,
-        "stock": 49,
+        "stock": 41,
         "descripcion": "Papas Cheddar",
         "precio": 270.0,
         "categoria": "comida"
@@ -36,7 +36,7 @@
     },
     {
         "idProducto": 6,
-        "stock": 25,
+        "stock": 16,
         "descripcion": "Onion Burger",
         "precio": 390.0,
         "categoria": "comida"

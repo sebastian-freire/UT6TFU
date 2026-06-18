@@ -103,7 +103,7 @@ class PedidoRepository(PedidoRepositoryBase):
             "cliente": pedido.cliente,
             "estado": pedido.estado.value,
             "total": pedido.total,
-            "cantidades": pedido._cantidades
+            "cantidades": pedido.obtenerCantidades()
         })
         self._guardar_todos(data)
 
